@@ -4,20 +4,23 @@ import (
 	"net/http"
 	"time"
 
+	"api-gin/internal/handler"
+	"api-gin/internal/service"
+
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
+	svc := service.Novo()
+	salaHandler := handler.NovoSalaHandler(svc)
+	alunoHandler := handler.NovoAlunoHandler(svc)
+	turmaHandler := handler.NovoTurmaHandler(svc)
 
 	r := gin.New()
-
-	// Uso dos Middlewares globais nativos e personalizados
 	r.Use(gin.Recovery())
 
-	// 4. Mapeamento de Rotas sob Grupo Versionado
 	v1 := r.Group("/api/v1")
 	{
-		// Monitoramento da API
 		v1.GET("/health", func(c *gin.Context) {
 			c.JSON(http.StatusOK, gin.H{
 				"status":    "healthy",
@@ -26,10 +29,19 @@ func main() {
 			})
 		})
 
-		// Domínio de Turmas (Classes)
-		//v1.POST("/turmas", turmaHandler.CriarTurma)
-		//v1.GET("/turmas", turmaHandler.ListarTurmas)
-		//v1.POST("/turmas/:id/alocar", turmaHandler.AlocarSala)
+		v1.POST("/salas", salaHandler.CriarSala)
+		v1.GET("/salas", salaHandler.ListarSalas)
+		v1.GET("/salas/:id/agenda", salaHandler.Agenda)
+
+		v1.POST("/alunos", alunoHandler.CriarAluno)
+		v1.GET("/alunos", alunoHandler.ListarAlunos)
+		v1.GET("/alunos/:id", alunoHandler.BuscarAluno)
+
+		v1.POST("/turmas", turmaHandler.CriarTurma)
+		v1.GET("/turmas", turmaHandler.ListarTurmas)
+		v1.POST("/turmas/:id/alunos", turmaHandler.MatricularAluno)
+		v1.GET("/turmas/:id/alunos", turmaHandler.ListarAlunos)
+		v1.POST("/turmas/:id/alocar", turmaHandler.AlocarSala)
 	}
 
 	r.Run(":8080")

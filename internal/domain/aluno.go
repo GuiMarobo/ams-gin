@@ -1,7 +1,7 @@
 package domain
 
 type Aluno struct {
-	ID    string `json:"id"`
-	Nome  string `json:"nome"`
-	Email string `json:"email"`
+	ID    string `json:"id" binding:"required"`
+	Nome  string `json:"nome" binding:"required"`
+	Email string `json:"email" binding:"required,email"`
 }
