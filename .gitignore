@@ -1,1 +1,7 @@
 go.sum
+
+# Binários gerados por `go build` (no Windows: api-gin.exe)
+*.exe
+
+# Laboratório de experimentos das aulas
+playground/
